@@ -22,7 +22,7 @@ public class ProductRepositoryTests {
 	private long nonExistingID;
 	private Product product;
 	private long countTotalProducts;
-	
+
 	// Injetar repositorio para ter capacidade de deletar
 	@Autowired
 	private ProductRepository repository;
@@ -54,17 +54,39 @@ public class ProductRepositoryTests {
 
 	@Test
 	public void saveShouldPersistWithAutoincrementWhenIdIsNull() {
-		
-		//Product product = new Product(...)
-		//Product product = Factory.createProduct();
-		product.setId(null); //garantir que é nulo
-		
+
+		// Product product = new Product(...)
+		// Product product = Factory.createProduct();
+		product.setId(null); // garantir que é nulo
+
 		product = repository.save(product);
-		
+
 		Assertions.assertNotNull(product.getId());
 		Assertions.assertEquals(countTotalProducts + 1, product.getId());
 	}
 
+	@Test
+	public void findByIdShouldReturnOptionalProductNotEmptyWhenIdExists() {
 
+		// Arrange in @BeforeEach
+
+		// Act
+		Optional<Product> result = repository.findById(existingID);
+
+		// Assert
+		Assertions.assertTrue(result.isPresent());
+	}
+
+	@Test
+	public void findByIdShouldReturnOptionalProductEmptyWhenIdNotExists() {
+
+		// Arrange in @BeforeEach
+
+		// Act
+		Optional<Product> result = repository.findById(nonExistingID);
+
+		// Assert
+		Assertions.assertFalse(result.isPresent());
+	}
 
 }
