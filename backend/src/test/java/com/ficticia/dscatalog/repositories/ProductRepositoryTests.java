@@ -3,6 +3,7 @@ package com.ficticia.dscatalog.repositories;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,27 +16,32 @@ import com.ficticia.dscatalog.entities.Product;
 
 @DataJpaTest
 public class ProductRepositoryTests {
-	
-	//Injetar repositorio para ter capacidade de deletar
+
+	private long existingID;
+	private long nonExistingID;
+
+	// Injetar repositorio para ter capacidade de deletar
 	@Autowired
 	private ProductRepository repository;
-	
+
+	@BeforeEach
+	void setUp() throws Exception {
+		existingID = 1L;
+		nonExistingID = 999l;
+	}
+
 	@Test
 	public void deleteShouldDeleteObjectWhenIdExists() {
-		
-		long existingID = 1L;
-		
+
 		repository.deleteById(existingID);
-		
+
 		Optional<Product> result = repository.findById(existingID);
 		Assertions.assertFalse(result.isPresent());
 	}
-	
+
 	@Test
 	public void deleteShouldThrowEmptyResultDataAccessExceptionWhenIdDoesNotExist() {
-		
-		long nonExistingID = 999L;
-		
+
 		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
 			repository.deleteById(nonExistingID);
 		});
