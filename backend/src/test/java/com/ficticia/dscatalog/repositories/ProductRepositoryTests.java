@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.ficticia.dscatalog.entities.Product;
+import com.ficticia.dscatalog.tests.Factory;
 
 // Boa pratica: caso em que a classe original contenha método estático
 // Fazer classe de testes no mesmo pacote em que a classe original a ser testada
@@ -19,7 +20,9 @@ public class ProductRepositoryTests {
 
 	private long existingID;
 	private long nonExistingID;
-
+	private Product product;
+	private long countTotalProducts;
+	
 	// Injetar repositorio para ter capacidade de deletar
 	@Autowired
 	private ProductRepository repository;
@@ -27,7 +30,9 @@ public class ProductRepositoryTests {
 	@BeforeEach
 	void setUp() throws Exception {
 		existingID = 1L;
-		nonExistingID = 999l;
+		nonExistingID = 999L;
+		product = Factory.createProduct();
+		countTotalProducts = 25L;
 	}
 
 	@Test
@@ -46,4 +51,20 @@ public class ProductRepositoryTests {
 			repository.deleteById(nonExistingID);
 		});
 	}
+
+	@Test
+	public void saveShouldPersistWithAutoincrementWhenIdIsNull() {
+		
+		//Product product = new Product(...)
+		//Product product = Factory.createProduct();
+		product.setId(null); //garantir que é nulo
+		
+		product = repository.save(product);
+		
+		Assertions.assertNotNull(product.getId());
+		Assertions.assertEquals(countTotalProducts + 1, product.getId());
+	}
+
+
+
 }
